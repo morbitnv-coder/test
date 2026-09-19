@@ -6,4 +6,4 @@ dependencyResolutionManagement {
     repositories { google(); mavenCentral() }
 }
 rootProject.name = "YTCommentTracker"
-include(":app")
+include(":app")\ninclude(":womanapp")
