@@ -190,6 +190,7 @@ private fun WomanTrackerApp() {
                     },
                     onOpenWoman = {
                         showProfileSetup = false
+                        selectedTab = 0
                         pageTitle = "Вход / профиль"
                         currentUrl = WOMAN_HOME
                         webView?.loadUrl(WOMAN_HOME)
