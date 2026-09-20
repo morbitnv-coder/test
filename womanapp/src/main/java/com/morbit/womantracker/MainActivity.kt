@@ -114,12 +114,10 @@ private fun WomanTrackerApp() {
         } else {
             showProfileSetup = false
             pageTitle = "Мои ответы"
-            currentUrl = profileUrl
-            webView?.loadUrl(profileUrl)
         }
     }
 
-    BackHandler(enabled = webView?.canGoBack() == true && !showProfileSetup) {
+    BackHandler(enabled = selectedTab == 0 && webView?.canGoBack() == true && !showProfileSetup) {
         webView?.goBack()
     }
 
@@ -129,23 +127,25 @@ private fun WomanTrackerApp() {
             TopAppBar(
                 title = { Text(pageTitle) },
                 navigationIcon = {
-                    if (!showProfileSetup && webView?.canGoBack() == true) {
+                    if (!showProfileSetup && selectedTab == 0 && webView?.canGoBack() == true) {
                         IconButton(onClick = { webView?.goBack() }) {
                             Icon(Icons.Default.ArrowBack, contentDescription = "Назад")
                         }
                     }
                 },
                 actions = {
-                    IconButton(onClick = {
-                        showProfileSetup = false
-                        pageTitle = if (selectedTab == 0) "Новые темы" else "Woman.ru"
-                        currentUrl = WOMAN_HOME
-                        webView?.loadUrl(WOMAN_HOME)
-                    }) {
-                        Icon(Icons.Default.Home, contentDescription = "Woman.ru")
-                    }
-                    IconButton(onClick = { webView?.reload() }, enabled = !showProfileSetup) {
-                        Icon(Icons.Default.Refresh, contentDescription = "Обновить")
+                    if (selectedTab == 0) {
+                        IconButton(onClick = {
+                            showProfileSetup = false
+                            pageTitle = "Woman.ru"
+                            currentUrl = WOMAN_HOME
+                            webView?.loadUrl(WOMAN_HOME)
+                        }) {
+                            Icon(Icons.Default.Home, contentDescription = "Woman.ru")
+                        }
+                        IconButton(onClick = { webView?.reload() }, enabled = !showProfileSetup) {
+                            Icon(Icons.Default.Refresh, contentDescription = "Обновить")
+                        }
                     }
                     IconButton(onClick = {
                         selectedTab = 1
@@ -195,6 +195,8 @@ private fun WomanTrackerApp() {
                         webView?.loadUrl(WOMAN_HOME)
                     }
                 )
+            } else if (selectedTab == 1) {
+                NativeMyRepliesScreen(profileUrl = profileUrl)
             } else {
                 WomanWebView(
                     initialUrl = currentUrl,
@@ -207,6 +209,7 @@ private fun WomanTrackerApp() {
                         if (isProfileUrl(url)) {
                             saveProfile(url)
                             selectedTab = 1
+                            pageTitle = "Мои ответы"
                         }
                     }
                 )
@@ -264,8 +267,8 @@ private fun ProfileSetup(
         }
         Spacer(Modifier.height(16.dp))
         Text(
-            "Версия 0.1: вкладки уже работают через общую сессию WebView. " +
-                "Следующий шаг — вынести ответы, лайки и новые ответы в нативные карточки."
+            "Версия 0.2: «Мои» теперь нативные карточки. Приложение сравнивает " +
+                "состояние темы и реакций с предыдущей проверкой."
         )
     }
 }
@@ -287,7 +290,7 @@ private fun WomanWebView(
                 settings.domStorageEnabled = true
                 settings.databaseEnabled = true
                 settings.cacheMode = WebSettings.LOAD_DEFAULT
-                settings.userAgentString = settings.userAgentString + " WomanTracker/0.1"
+                settings.userAgentString = settings.userAgentString + " WomanTracker/0.2"
                 settings.mixedContentMode = WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE
                 settings.setSupportZoom(true)
                 settings.builtInZoomControls = false
